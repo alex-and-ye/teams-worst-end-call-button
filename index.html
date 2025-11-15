@@ -179,27 +179,37 @@
 
     <script>
       const endButton = document.querySelector(".end-button");
+      const MIN_MOVE_DISTANCE = 140;
+      const PADDING = 32;
 
       const repositionButton = () => {
-        const padding = 32;
         const buttonRect = endButton.getBoundingClientRect();
-        const maxX = window.innerWidth - buttonRect.width - padding;
-        const maxY = window.innerHeight - buttonRect.height - padding;
-        const nextX = Math.random() * (maxX - padding) + padding;
-        const nextY = Math.random() * (maxY - padding) + padding;
+        const maxX = window.innerWidth - buttonRect.width - PADDING;
+        const maxY = window.innerHeight - buttonRect.height - PADDING;
+        const currentX = buttonRect.left;
+        const currentY = buttonRect.top;
+
+        let nextX;
+        let nextY;
+        let attempts = 0;
+
+        do {
+          nextX = Math.random() * (maxX - PADDING) + PADDING;
+          nextY = Math.random() * (maxY - PADDING) + PADDING;
+          attempts++;
+        } while (Math.hypot(nextX - currentX, nextY - currentY) < MIN_MOVE_DISTANCE && attempts < 8);
 
         endButton.style.left = `${nextX}px`;
         endButton.style.top = `${nextY}px`;
-        endButton.style.transform = "translate(0, 0) rotate(" + (Math.random() * 10 - 5) + "deg)";
+        endButton.style.transform = `translate(0, 0) rotate(${Math.random() * 10 - 5}deg)`;
       };
 
       endButton.addEventListener("mouseenter", repositionButton);
 
       window.addEventListener("resize", () => {
         const rect = endButton.getBoundingClientRect();
-        const padding = 32;
-        const clampedX = Math.min(Math.max(rect.left, padding), window.innerWidth - rect.width - padding);
-        const clampedY = Math.min(Math.max(rect.top, padding), window.innerHeight - rect.height - padding);
+        const clampedX = Math.min(Math.max(rect.left, PADDING), window.innerWidth - rect.width - PADDING);
+        const clampedY = Math.min(Math.max(rect.top, PADDING), window.innerHeight - rect.height - PADDING);
         endButton.style.left = `${clampedX}px`;
         endButton.style.top = `${clampedY}px`;
       });
